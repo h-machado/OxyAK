@@ -54,16 +54,16 @@ var options = stdio.getopt({
 	'failoverMonkey': {   key: 'f', args: '*', description: 'Provide a list of available nodes for forging failover; stays awake and acts on blockchain and connection failures'},
 	'measureOnSyncOnly': {key: 'Z', args: 0, description: 'Takes measures of consensus only while syncing'},
 	'switchConfirmation':{key: 'E', args: 1, description: 'Wait for N cycles before switching', default: SWITCH_CONFIRMATIONS},
-	'supervise': {        key: 'S', args: 1, description: 'Provide lisk path to manage lisk process locally (handles fork3, etc.)'},
-	'liskscript': {       key: 'K', args: 1, description: 'Provide absolute path for lisk script: lisk.sh for operations (supervise implied)'},
-	'logfile': {          key: 'J', args: 1, description: 'Provide absolute path for lisk logfile (supervise implied)'},
+	'supervise': {        key: 'S', args: 1, description: 'Provide oxy path to manage oxy process locally (handles fork3, etc.)'},
+	'oxyscript': {       key: 'K', args: 1, description: 'Provide absolute path for oxy script: oxy_manager.bash for operations (supervise implied)'},
+	'logfile': {          key: 'J', args: 1, description: 'Provide absolute path for oxycoin.logfile (supervise implied)'},
 	'minutesWithoutBlock': {  key: 'B', args: 1, description: 'Minutes without blocks before issuing a rebuild, default is disabled (0)', default: MINUTES_WITH_NO_BLOCKS_BEFORE_REBUILDING},
 	'consensus': {        key: 'Q', args: 2, description: 'Broadhash consensus threshold (%), reload if under value for N consecutive samples', default: [NODE_MIN_CONSENSUS_PERCENT,NODE_MIN_CONSENSUS_SAMPLES]},
 	'inadequateBroadhash': {  key: 'q', args: 0, description: 'Restart on "Inadequate broadhash consensus" message'},
 	'reloadSchedule': {   key: 'R', args: 1, description: 'Restart after N minutes if not forging, supervise only, 0 means disabled', default: 0},
 	'pollingInterval': {  key: 'P', args: 1, description: 'Interval between node polling in milliseconds', default: NODE_POLLING_INTERVAL},
 	'apiRequestTimeout': {key: 'w', args: 1, description: 'API request timeout, 0 means disabled', default: API_REQUEST_TIMEOUT},
-	'maxFailures': {      key: 'F', args: 1, description: 'Maximum failures tolerated when chatting with lisk nodes', default: NODE_MAX_FAILURES},
+	'maxFailures': {      key: 'F', args: 1, description: 'Maximum failures tolerated when chatting with oxy nodes', default: NODE_MAX_FAILURES},
 	'maxBlocksDelayed': { key: 'D', args: 1, description: 'Maximum number of block difference between nodes before change forging node', default: NODE_MAX_BLOCK_DELAY},
 	'testMode': {         key: 'X', args: 0, description: 'Test mode' }
 });
@@ -856,7 +856,7 @@ function readLines(input, func) {
   });
 }
 
-if (options.supervise || options.logfile || options.liskscript) {
+if (options.supervise || options.logfile || options.oxyscript) {
 	var exec = require('child_process').exec;
 	var lastBlockTime = (new Date()).getTime();
 	var lastStartTime = (new Date()).getTime();
@@ -864,7 +864,7 @@ if (options.supervise || options.logfile || options.liskscript) {
 	function puts(error, stdout, stderr) { sys.puts(stdout) }
 
 	var logfile = undefined;
-	var lisksh = undefined;
+	var oxysh = undefined;
 	var sep = "/";
 	var consensusLines = 0;
 	var consensusItems = [];
@@ -873,7 +873,7 @@ if (options.supervise || options.logfile || options.liskscript) {
 			logger.info(`Found log file "${options.logfile}"`);
 			logfile = options.logfile;
 		} else {
-			logger.error(`"${options.logfile}" is not a valid lisk logfile`);
+			logger.error(`"${options.logfile}" is not a valid oxycoin.logfile`);
 			process.exit(12);
 		}
 	} else {
@@ -884,36 +884,36 @@ if (options.supervise || options.logfile || options.liskscript) {
 			logger.info(`Found log file "${options.supervise}\\app.log"`);
 			sep = "\\";
 			logfile = options.supervise  + "\\app.log";
-		} else if (fs.existsSync(options.supervise  + "\\lisk.log", fs.F_OK)) {
-			logger.info(`Found log file "${options.supervise}\\lisk.log"`);
+		} else if (fs.existsSync(options.supervise  + "\\oxycoin.log", fs.F_OK)) {
+			logger.info(`Found log file "${options.supervise}\\oxycoin.log"`);
 			sep = "\\";
-			logfile = options.supervise  + "\\lisk.log";
-		} else if (fs.existsSync(options.supervise  + "/lisk.log", fs.F_OK)) {
-			logger.info(`Found log file "${options.supervise}/lisk.log"`);
-			logfile = options.supervise  + "/lisk.log";
-		} else if (fs.existsSync(options.supervise  + "/logs/lisk.log", fs.F_OK)) {
-			logger.info(`Found log file "${options.supervise}/logs/lisk.log"`);
-			logfile = options.supervise  + "/logs/lisk.log";
+			logfile = options.supervise  + "\\oxycoin.log";
+		} else if (fs.existsSync(options.supervise  + "/oxycoin.log", fs.F_OK)) {
+			logger.info(`Found log file "${options.supervise}/oxycoin.log"`);
+			logfile = options.supervise  + "/oxycoin.log";
+		} else if (fs.existsSync(options.supervise  + "/logs/oxycoin.log", fs.F_OK)) {
+			logger.info(`Found log file "${options.supervise}/logs/oxycoin.log"`);
+			logfile = options.supervise  + "/logs/oxycoin.log";
 		} else {
-			logger.error(`"${options.supervise}" is not a valid lisk path (no app.log found)`);
+			logger.error(`"${options.supervise}" is not a valid oxy path (no app.log found)`);
 			process.exit(10);
 		}
 	}
 
-	if (options.liskscript) {
-		if (fs.existsSync(options.liskscript, fs.F_OK)) {
-			logger.info(`Found log file "${options.liskscript}"`);
-			lisksh = options.liskscript;
+	if (options.oxyscript) {
+		if (fs.existsSync(options.oxyscript, fs.F_OK)) {
+			logger.info(`Found log file "${options.oxyscript}"`);
+			oxysh = options.oxyscript;
 		} else {
-			logger.error(`"${options.liskscript}" file does not exist`);
+			logger.error(`"${options.oxyscript}" file does not exist`);
 			process.exit(15);
 		}
 	} else {
-		if (fs.existsSync(options.supervise  + sep + "lisk.sh", fs.F_OK)) {
-			lisksh = options.supervise  + sep + "lisk.sh";
-			logger.info(`Lisk shell script found: ${options.supervise  + sep + "lisk.sh"}`);
+		if (fs.existsSync(options.supervise  + sep + "oxy_manager.bash", fs.F_OK)) {
+			oxysh = options.supervise  + sep + "oxy_manager.bash";
+			logger.info(`Lisk shell script found: ${options.supervise  + sep + "oxy_manager.bash"}`);
 		} else {
-			logger.warn("Lisk shell script (lisk.sh) not found in the path provided after -S. Restarts will not occur!");
+			logger.warn("Lisk shell script (oxy_manager.bash) not found in the path provided after -S. Restarts will not occur!");
 		}
 	}
 
@@ -1111,9 +1111,9 @@ if (options.supervise || options.logfile || options.liskscript) {
 					//issue action
 					switch (action) {
 						case "restart":
-							var command = "cd "+ options.supervise +" && bash lisk.sh stop" + "; sleep 30 ;" + "cd "+ options.supervise +" && bash lisk.sh start" + ";";
-							if (options.liskscript) {
-								command = "bash " + lisksh + " stop" + "; sleep 30 ;" + "bash " + lisksh + " start" + ";";
+							var command = "cd "+ options.supervise +" && bash oxy_manager.bash stop" + "; sleep 30 ;" + "cd "+ options.supervise +" && bash oxy_manager.bash start" + ";";
+							if (options.oxyscript) {
+								command = "bash " + oxysh + " stop" + "; sleep 30 ;" + "bash " + oxysh + " start" + ";";
 							}
 							logger.warn(`Performing "${command}"`);
 							exec(command, (err, stdout, stderr) => {
@@ -1125,9 +1125,9 @@ if (options.supervise || options.logfile || options.liskscript) {
 							});
 							break;
 						default:
-							var command = "cd "+ options.supervise +" && bash lisk.sh " + action + extraArguments;
-							if (options.liskscript) {
-								command = "bash " + lisksh + " " + action + extraArguments;
+							var command = "cd "+ options.supervise +" && bash oxy_manager.bash " + action + extraArguments;
+							if (options.oxyscript) {
+								command = "bash " + oxysh + " " + action + extraArguments;
 							}
 							logger.warn(`Performing "${command}"`);
 							exec(command, (err, stdout, stderr) => {

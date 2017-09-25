@@ -1,8 +1,8 @@
 @echo off
 
 set NODEEX=""
-set LISKAK="%~dp0\src\oxyak.js"
-set LISKAKARGS=
+set OXYAK="%~dp0\src\oxyak.js"
+set OXYAKARGS=
 
 for %%i in (
 	"C:\Program Files\nodejs\node.exe"
@@ -26,9 +26,9 @@ IF %NODEEX%=="" (
 	goto failure
 )
 
-echo Lisk Army Knife is %LISKAK%
-echo running %NODEEX% %LISKAK% %*
-%NODEEX% %LISKAK% %*
+echo Lisk Army Knife is %OXYAK%
+echo running %NODEEX% %OXYAK% %*
+%NODEEX% %OXYAK% %*
 
 goto end
 

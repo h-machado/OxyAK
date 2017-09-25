@@ -7,8 +7,8 @@ const NODE_MIN_CONSENSUS_SAMPLES = 10;
 const API_REQUEST_TIMEOUT = 0;
 const NODE_MAX_FAILURES = 10;
 const NODE_MAX_BLOCK_DELAY = 0;
-const LISK_MAX_VOTES = 101;
-const LISK_MAX_BALLOTS = 33;
+const OXY_MAX_VOTES = 101;
+const OXY_MAX_BALLOTS = 33;
 const MAX_INMEMORY_DELEGATE_PAGES = 10;
 const MINUTES_WITH_NO_BLOCKS_BEFORE_REBUILDING = 0;
 var monitorIteration = 0;
@@ -533,8 +533,8 @@ if (fs.existsSync(options.upvote, fs.F_OK)) {
 			dcount++;
 		}
 	}
-	if (dcount > LISK_MAX_VOTES) {
-		logger.error(`You have more than ${LISK_MAX_VOTES} delegates in your list (${delegateList.length})`);
+	if (dcount > OXY_MAX_VOTES) {
+		logger.error(`You have more than ${OXY_MAX_VOTES} delegates in your list (${delegateList.length})`);
 	}
 }
 
@@ -670,13 +670,13 @@ if (options.info || options.listVotes || options.listVoters || options.checkVote
 												}
 
 											});
-											console.log(`You have voted in ${countVotes} of ${LISK_MAX_VOTES}`);
+											console.log(`You have voted in ${countVotes} of ${OXY_MAX_VOTES}`);
 											console.log(`You will downvote ${negativeVotes}`);
 											console.log(`You will upvote ${newVotes}`);
-											console.log(`You may still vote in ${LISK_MAX_VOTES - futureVotes} delegates after this`);
-											console.log(`You will have ${futureVotes} of ${LISK_MAX_VOTES} votes from your account`);
-											if (futureVotes - negativeVotes > LISK_MAX_VOTES) {
-												var delta = futureVotes - negativeVotes - LISK_MAX_VOTES;
+											console.log(`You may still vote in ${OXY_MAX_VOTES - futureVotes} delegates after this`);
+											console.log(`You will have ${futureVotes} of ${OXY_MAX_VOTES} votes from your account`);
+											if (futureVotes - negativeVotes > OXY_MAX_VOTES) {
+												var delta = futureVotes - negativeVotes - OXY_MAX_VOTES;
 												console.log(`You will need to remove ${delta} delegates from your list (run me with the "-l" flag)`);
 											} else {
 												//TODO: try to chain instead of parallel
@@ -686,7 +686,7 @@ if (options.info || options.listVotes || options.listVoters || options.checkVote
 													for (var i = 0; i < delegateAdd.length; i++) {
 														clist.push(delegateAdd[i]);
 														currentBallots++;
-														if ((currentBallots > 0) && ((currentBallots % LISK_MAX_BALLOTS) == 0)) {
+														if ((currentBallots > 0) && ((currentBallots % OXY_MAX_BALLOTS) == 0)) {
 															l.node("vote", { 'delegates': clist }).then(logger.info, logger.error);
 															clist = [];
 														}

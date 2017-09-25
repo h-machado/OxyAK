@@ -6,7 +6,7 @@
   "proto": "http",
   "supervise": {
     "rebuild": {
-      "extraArguments": "-u https://snapshot.lisknode.io"
+      "extraArguments": "-u http://oxymondo.com"
     }
   }
 }

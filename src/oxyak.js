@@ -149,7 +149,7 @@ if  ((config["secondSecret"] === undefined)||(config["secondSecret"] === null)) 
 */
 var listVotes = function(data) {
 	if (data.success === true) {
-		console.log("LiskAddress;DelegateName");
+		console.log("OxyAddress;DelegateName");
 		Object.keys(data["delegates"]).forEach(function(element, key, _array) {
 			console.log(data["delegates"][element]["address"] + ";" + data["delegates"][element]["username"]);
 		});
@@ -354,7 +354,7 @@ var oxyak = function(_config, _options) {
 				_config[element] = data[element];
 			});
 			if (_options.info) {
-				console.log(`Lisk account info for ${config["filename"]}`);
+				console.log(`Oxy account info for ${config["filename"]}`);
 				Object.keys(_config["account"]).forEach(function(element, key, _array) {
 					console.log(`   ${element} = ${_config["account"][element]}`);
 				});
@@ -911,9 +911,9 @@ if (options.supervise || options.logfile || options.oxyscript) {
 	} else {
 		if (fs.existsSync(options.supervise  + sep + "oxy_manager.bash", fs.F_OK)) {
 			oxysh = options.supervise  + sep + "oxy_manager.bash";
-			logger.info(`Lisk shell script found: ${options.supervise  + sep + "oxy_manager.bash"}`);
+			logger.info(`Oxy shell script found: ${options.supervise  + sep + "oxy_manager.bash"}`);
 		} else {
-			logger.warn("Lisk shell script (oxy_manager.bash) not found in the path provided after -S. Restarts will not occur!");
+			logger.warn("Oxy shell script (oxy_manager.bash) not found in the path provided after -S. Restarts will not occur!");
 		}
 	}
 
@@ -1019,8 +1019,8 @@ if (options.supervise || options.logfile || options.oxyscript) {
 				message = matches[5];
 				if (message !== "") {
 					switch (verb) {
-						case "Lisk":
-							//[inf] 2016-12-04 22:55:21 | Lisk started: 0.0.0.0:8000
+						case "Oxy":
+							//[inf] 2016-12-04 22:55:21 | Oxy started: 0.0.0.0:8000
 							var smatch;
 							if (smatch = message.match(/(\w+)/)) {
 								if (smatch[0] === "started") {
@@ -1029,7 +1029,7 @@ if (options.supervise || options.logfile || options.oxyscript) {
 							}
 							break;
 						case "Forging":
-							//[inf] 2016-12-04 22:55:21 | Lisk started: 0.0.0.0:8000
+							//[inf] 2016-12-04 22:55:21 | Oxy started: 0.0.0.0:8000
 							var smatch;
 							if (smatch = message.match(/(\w+)/)) {
 								if (smatch[0] === "enabled") {
@@ -1405,7 +1405,7 @@ if ((options.failoverMonkey) && (options.failoverMonkey.constructor === Array) &
 						}
 					});
 					logger.info(`Summary: ${summary}`);
-					logger.info(`Liskak Runtime Stats: {${RuntimeStats.join(',')}}`);
+					logger.info(`Oxyak Runtime Stats: {${RuntimeStats.join(',')}}`);
 				}
 
 			}

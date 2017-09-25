@@ -1,0 +1,12 @@
+{
+  "secret": "",
+  "secondSecret": null,
+  "host":"localhost",
+  "port":9305,
+  "proto": "http",
+  "supervise": {
+    "rebuild": {
+      "extraArguments": "-u https://snapshot.lisknode.io"
+    }
+  }
+}

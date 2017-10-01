@@ -17,6 +17,8 @@ npm install
 ## Usage
 
 ### Failover forging and node monitoring
+![OxyAK proposed setup for monitoring](https://github.com/h-machado/OxyAK/blob/master/docs/oxyak_proposed_setup.jpg)
+
 OxyAK running with the failoverMonkey flag will always try to have forging enabled at the best possible node using always forge tactics inspired by [lisk army knife](https://github.com/filipealmeida/liskak):
 * Flag: ```-Q 51 2``` -> don't switch to better consensus if consensus is above 51%
 * Flag: ```-D 2``` -> don't switch to better height if height of current forging node is under 2 of difference

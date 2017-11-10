@@ -1124,6 +1124,20 @@ if (options.supervise || options.logfile || options.oxyscript) {
 								logger.info(stdout);
 							});
 							break;
+						case "rebuild":
+							var command = "cd "+ options.supervise +" && echo y | bash oxy_manager.bash " + action + extraArguments;
+							if (options.oxyscript) {
+								command = "bash " + oxysh + " " + action + extraArguments;
+							}
+							logger.warn(`Performing "${command}"`);
+							exec(command, (err, stdout, stderr) => {
+								if (err) {
+									logger.error(err);
+									return;
+								}
+								logger.info(stdout);
+							});
+							break;
 						default:
 							var command = "cd "+ options.supervise +" && bash oxy_manager.bash " + action + extraArguments;
 							if (options.oxyscript) {

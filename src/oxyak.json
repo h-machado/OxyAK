@@ -6,7 +6,7 @@
   "proto": "http",
   "supervise": {
     "rebuild": {
-      "extraArguments": "-u http://oxymondo.com"
+      "extraArguments": ""
     }
   }
 }
